@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/client";
 import {
   Card,
   Typography,
@@ -8,39 +9,37 @@ import {
 } from "@material-tailwind/react";
 import Avatar from "react-avatar";
 import { useNavigate } from "react-router-dom";
+import { Loader } from "lucide-react";
+import { GET_ALL_USERS } from "../graphql/queries";
 
-const users = [
-  {
-    id: 1,
-    firstName: "Clinton",
-    lastName: "Mejia",
-  },
-  {
-    id: 2,
-    firstName: "Ricardo",
-    lastName: "Perez",
-  },
-  {
-    id: 3,
-    firstName: "Jorge",
-    lastName: "Gonzalez",
-  },
-  {
-    id: 4,
-    firstName: "Luis",
-    lastName: "Gutierrez",
-  },
-];
-
-export function Sidebar() {
+export function Sidebar({ setLoggedInUser }) {
+  const { loading, data, error } = useQuery(GET_ALL_USERS);
   const navigate = useNavigate();
+
+  if (loading)
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <Loader className="size-5 animate-spin" />
+      </div>
+    );
+
+  if (error) {
+    console.log("errr---", error.message);
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 ">
       <div className="mb-2 p-4 flex justify-between items-center">
         <Typography variant="h5" color="blue-gray">
           Chat ✏️
         </Typography>
-        <Typography>
+        <Typography
+          onClick={() => {
+            localStorage.removeItem("jwt");
+            setLoggedInUser(false);
+          }}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -58,10 +57,10 @@ export function Sidebar() {
         </Typography>
       </div>
       <List>
-        {users.map((user) => (
+        {data.users.map((user, index) => (
           <ListItem
-            key={user.id}
-            onClick={() => navigate(`/${user.id}/${user.firstName}`)}
+            key={index}
+            onClick={() => navigate(`/chat/${user.id}/${user.firstName}`)}
           >
             <ListItemPrefix>
               <Avatar

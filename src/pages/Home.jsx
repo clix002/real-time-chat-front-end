@@ -7,16 +7,16 @@ const AllRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Welcome />} />
-      <Route path="/:id/:name" element={<Chat />} />
+      <Route path="/chat/:id/:name" element={<Chat />} />
     </Routes>
   );
 };
 
-const Home = () => {
+const Home = ({ setLoggedInUser }) => {
   return (
     <div className="flex">
-      <Sidebar />
-      <AllRoutes />
+      <Sidebar setLoggedInUser={setLoggedInUser} />
+      <AllRoutes setLoggedInUser={setLoggedInUser} />
     </div>
   );
 };
