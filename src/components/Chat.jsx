@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "react-avatar";
 import { useParams } from "react-router-dom";
 import {
@@ -9,33 +9,48 @@ import {
   Button,
 } from "@material-tailwind/react";
 import Message from "./Message";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, useSubscription } from "@apollo/client";
 import { GET_MESSAGES } from "../graphql/queries";
 import { Loader, Send } from "lucide-react";
 import { SEND_MESSAGE } from "../graphql/mutation";
+import { MESSAGE_SUBSCRIPTION } from "../graphql/subscription";
 
 const Chat = () => {
   const { id, name } = useParams();
   const [text, setText] = useState("");
-  const [message, setMessage] = useState([]);
-
-  const [sendMessage] = useMutation(SEND_MESSAGE, {
-    onCompleted(data) {
-      setMessage((prevMessage) => [...prevMessage, data.createMessage]);
-    },
-  });
+  const [messages, setMessages] = useState([]);
 
   const { data, loading, error } = useQuery(GET_MESSAGES, {
     variables: {
-      receiverId: parseInt(id),
+      receiverId: parseInt(id, 10),
     },
     onCompleted(data) {
-      setMessage(data.messageByUser);
+      setMessages(data.messageByUser);
     },
   });
 
+  const [sendMessage] = useMutation(SEND_MESSAGE);
+
+  const { data: subData, error: subError } =
+    useSubscription(MESSAGE_SUBSCRIPTION);
+
+  useEffect(() => {
+    if (subData) {
+      console.log(subData);
+      setMessages((prevMessages) => [...prevMessages, subData.messageCreated]);
+    }
+  }, [subData]);
+
+  useEffect(() => {
+    if (subError) {
+      console.error("Subscription error:", subError.message);
+    }
+  }, [subError]);
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
+
+  const lastMessage = messages[messages.length - 1];
 
   return (
     <div className="w-full">
@@ -64,7 +79,7 @@ const Chat = () => {
               <Loader className="size-4 animate-spin" />
             </div>
           ) : (
-            message.map((msg) => (
+            messages.map((msg) => (
               <Message
                 key={msg.id}
                 text={msg.text}
@@ -85,9 +100,10 @@ const Chat = () => {
         />
         <Button
           size="sm"
-          onClick={() =>
-            sendMessage({ variables: { text, receiverId: parseInt(id) } })
-          }
+          onClick={() => {
+            sendMessage({ variables: { text, receiverId: parseInt(id, 10) } });
+            setText("");
+          }}
         >
           <Send />
         </Button>

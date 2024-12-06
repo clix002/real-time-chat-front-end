@@ -38,19 +38,18 @@ const Welcome = () => {
       <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-            Refreshingly Sustainable:
-            <span className="text-blue-600">Boxed Water</span>
+            Hola 👋, somos <span className="text-blue-600">Chat App</span>
           </h1>
           <h2 className="mt-6 text-lg leading-8 text-gray-600">
-            Choose a more eco-friendly way to hydrate with our 100% recyclable
-            cartons.
+            Una aplicación de mensajería para conectarte con amigos y
+            familiares.
           </h2>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <a
               className="isomorphic-link isomorphic-link--internal inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-              href="/login"
+              href="https://github.com/clix002/real-time-chat-back-end"
             >
-              Shop Now
+              Ver código backend
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4"
